@@ -53,11 +53,37 @@ Login SSO hanya berlaku untuk **pegawai** yang NIP-nya sudah ditautkan ke akun s
 
 ## Rencana Pengembangan Selanjutnya
 
-### Sinkronisasi Data Pegawai
-Tabel `pegawai` saat ini dikelola manual (CRUD + import Excel) lewat menu Data Pegawai, tidak ada sinkronisasi otomatis ke sistem HR/e-office kampus. Kalau nanti dibuatkan sinkronisasi otomatis:
-- **Aman** selama sinkronisasi berupa **UPSERT berdasarkan kolom `nip`** (update kalau NIP sudah ada, insert kalau belum) — fitur SSO dan "Pilih dari Data Pegawai" sama-sama mengunci ke NIP, bukan `pegawai_id`.
-- **Berisiko** kalau sinkronisasi berupa **truncate + insert ulang**, atau NIP seseorang berubah/dihapus di sumber data — akun staf yang sudah ditautkan ke NIP lama akan "putus" (SSO login gagal, fitur "Lihat Data Pegawai" akan menampilkan "tidak terhubung").
-- **Rekomendasi**: pakai strategi UPSERT by NIP, jangan pernah mengubah/menghapus nilai `nip` untuk pegawai yang sudah pernah ditautkan ke akun sistem tanpa proses migrasi eksplisit.
+Bagian ini adalah arahan untuk partner developer yang melanjutkan — semua temuan di bawah sudah diverifikasi langsung ke kode (bukan dugaan), lengkap dengan lokasi file supaya bisa langsung ditindaklanjuti.
+
+### 🔴 Temuan 1 (Prioritas Tinggi): Nonaktifkan/Hapus Pegawai tidak memutus akses SSO-nya
+File: `application/controllers/dir/Manage_pegawai.php`, method `nonaktifkan()` dan `delete()`.
+
+Kedua method ini **hanya mengubah tabel `pegawai`** (`status_anggota`, soft-delete via `status`), **tidak pernah menyentuh tabel `siperpus_sysuser`**. Sementara `Sso::callback()` (`application/controllers/Sso.php`) memvalidasi login SSO murni dari kolom `siperpus_sysuser.active`, tanpa pernah mengecek status pegawai terkait.
+
+**Dampak nyata**: pegawai yang sudah di-nonaktifkan/dihapus dari menu Data Pegawai, tapi sebelumnya sempat ditautkan ke akun admin via SSO, **tetap bisa login penuh ke sistem perpustakaan**.
+
+**Rekomendasi perbaikan**: di `nonaktifkan()` dan `delete()`, tambahkan langkah untuk ikut menonaktifkan (`active = 0`) baris `siperpus_sysuser` yang `nip_pegawai`-nya cocok dengan pegawai yang sedang diproses. Atau alternatif: `Sso::callback()` diubah supaya ikut mengecek `pegawai.status_anggota = 'Aktif'` sebelum mengizinkan login, bukan cuma cek tabel `siperpus_sysuser` saja.
+
+### 🟡 Temuan 2: Import Excel Pegawai bukan alat sinkronisasi, hanya tambah data baru
+File: `application/controllers/dir/Manage_pegawai.php`, method `import_excel()`.
+
+Begitu ketemu 1 baris dengan NIP yang **sudah ada** di database, seluruh proses import langsung dibatalkan total (`trans_rollback(); exit;`) — bukan skip baris itu saja. Jadi fitur ini tidak bisa dipakai untuk "refresh" data pegawai dari file terbaru HR yang isinya campuran pegawai lama + baru — akan gagal 100% begitu ketemu 1 NIP lama.
+
+**Rekomendasi perbaikan**: ubah logika jadi UPSERT by NIP (`cek_duplicate_nip()` yang sudah ada dipakai untuk UPDATE baris existing, bukan untuk membatalkan seluruh import), supaya bisa dipakai berkala untuk sinkronisasi data pegawai.
+
+### 🟠 Temuan 3: SQL Injection di lookup User Admin
+File: `application/models/Md_siperpus_sysuser.php`, method `getUserById()`:
+```php
+$hasil = $this->db->query("SELECT * FROM siperpus_sysuser where idsysuser='$id'");
+```
+`$id` di sini berasal langsung dari URL (dipakai endpoint `admin/daftar_user/edit/{id}` dan `.../pass/{id}`) tanpa sanitasi — beda dari method lain di file yang sama (`checkLogin()`, `getUserByNip()`) yang sudah pakai `get_where()` (aman, ter-parameterisasi otomatis). Butuh sesi admin untuk mengaksesnya, tapi tetap celah nyata untuk admin dengan role rendah.
+
+**Rekomendasi perbaikan**: ganti ke pola yang sama seperti method lain di file ini —
+```php
+function getUserById($id) {
+    return $this->db->get_where('siperpus_sysuser', array('idsysuser' => $id))->result();
+}
+```
 
 ### Efek Konversi Akun Manual → SSO (via Edit User)
 - Username (ID User) tidak berubah saat konversi — riwayat log lama tetap konsisten.
