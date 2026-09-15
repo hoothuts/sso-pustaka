@@ -1,0 +1,20 @@
+# OAuth credentials (sensitive, rotate-hard secrets — excluded even though the repo is private)
+application/config/gmail_credential.json
+application/config/gmail_token.json
+
+# User-uploaded content (book covers, files, etc.) — not source code, too large for git
+uploads/*
+!uploads/index.html
+
+# Logs
+application/logs/*.log
+diag.log
+
+# Debug / stray files
+machine.php
+NUL
+
+# IDE / OS
+.vscode/
+.DS_Store
+Thumbs.db

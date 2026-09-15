@@ -1,0 +1,45 @@
+services:
+  app:
+    build:
+      context: ./docker
+      dockerfile: Dockerfile
+    container_name: pkrlib_app
+    ports:
+      - "80:80"
+    volumes:
+      - .:/var/www/html
+    depends_on:
+      - mariadb
+    restart: unless-stopped
+
+  mariadb:
+    image: mariadb:10.11
+    container_name: pkrlib_mariadb
+    environment:
+      MYSQL_ROOT_PASSWORD: "rootpassword"
+      MYSQL_DATABASE: "sim_perpustakaan"
+      MYSQL_USER: "pkrlib2"
+      MYSQL_PASSWORD: "librarypkr@2023"
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./docker/init-db/00-init-akademik.sh:/docker-entrypoint-initdb.d/00-init-akademik.sh:ro
+      - ./docker/init-db/01-init-perpustakaan.sh:/docker-entrypoint-initdb.d/01-init-perpustakaan.sh:ro
+      - ../Database/sim_akademik.sql:/opt/sql/sim_akademik.sql:ro
+      - ../Database/sim_perpustakaan.sql:/opt/sql/sim_perpustakaan.sql:ro
+    ports:
+      - "3306:3306"
+    restart: unless-stopped
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: pkrlib_phpmyadmin
+    environment:
+      PMA_HOST: mariadb
+    ports:
+      - "8081:80"
+    depends_on:
+      - mariadb
+    restart: unless-stopped
+
+volumes:
+  db_data:
