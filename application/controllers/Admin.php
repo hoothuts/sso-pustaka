@@ -729,6 +729,8 @@ class Admin extends CI_Controller
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 1);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 2);
         $imageData = curl_exec($ch);
         $mimeType  = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
         curl_close($ch);
