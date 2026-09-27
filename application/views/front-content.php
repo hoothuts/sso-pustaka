@@ -2761,6 +2761,32 @@
 	</section>
 <?php } ?>
 <!-- end main-content -->
+
+<!-- Modal: Login Anggota -->
+<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="memberLoginLabel">
+	<div class="modal-dialog" role="document">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+				<h4 class="modal-title" id="memberLoginLabel">Login Anggota</h4>
+			</div>
+			<form id="form_download">
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="member_username">NIS / NIP</label>
+						<input type="text" id="member_username" name="username" class="form-control" autocomplete="off" required>
+					</div>
+					<div class="form-group">
+						<label for="member_pass">Password</label>
+						<input type="password" id="member_pass" name="pass" class="form-control" required>
+					</div>
+				</div>
+				<div class="modal-footer" id="downloadfooter"></div>
+			</form>
+		</div>
+	</div>
+</div>
+
 <script type="text/javascript">
 	function download(file_name) {
 		$.ajax({
@@ -2769,11 +2795,14 @@
 			data: $('#form_download').serialize(),
 			dataType: "JSON",
 			success: function(e) {
-				$("#myModal").modal('hide');
-				location.reload();
+				if (e === true) {
+					$("#myModal").modal('hide');
+					location.reload();
+				} else {
+					alert('Username atau Password Salah.');
+				}
 			},
 			error: function(jqXHR, textStatus, errorThrown) {
-				$("#myModal").modal('hide');
 				alert('Username atau Password Salah.');
 			}
 		});

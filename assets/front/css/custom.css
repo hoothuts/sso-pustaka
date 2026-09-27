@@ -141,6 +141,51 @@
 /* --- END CSS LIVE CHAT --- */
 
 
+/* --- START NAVBAR USER STATUS --- */
+.header-top .navbar-user {
+    color: #ffffff;
+    white-space: nowrap;
+}
+
+.header-top .navbar-user i {
+    margin-right: 4px;
+}
+
+.header-top .navbar-user-name {
+    display: inline-block;
+    max-width: 170px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    vertical-align: bottom;
+    font-weight: 600;
+}
+
+.header-top .navbar-user-badge {
+    display: inline-block;
+    margin-left: 5px;
+    padding: 1px 7px;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    color: #047d78;
+    background-color: #ffffff;
+    border-radius: 9px;
+    vertical-align: middle;
+}
+
+@media (max-width: 767px) {
+    .header-top .navbar-user-name {
+        max-width: 90px;
+    }
+
+    .header-top .navbar-user-badge {
+        display: none;
+    }
+}
+
+/* --- END NAVBAR USER STATUS --- */
+
 /* --- START FOOTER --- */
 /* BACKGROUND */
 .footer-modern {

@@ -160,6 +160,18 @@ class Md_vwanggota extends CI_Model
     }
   }
 
+  function getInfoAnggota($no_anggota)
+  {
+    return $this->db->query(
+      "SELECT v.kategori, COALESCE(s.nama, p.nama) AS nama
+       FROM vwanggota v
+       LEFT JOIN vwsiswa s ON s.nis = v.no_anggota
+       LEFT JOIN pegawai p ON p.nip = v.no_anggota
+       WHERE v.no_anggota = ? LIMIT 1",
+      array($no_anggota)
+    )->row();
+  }
+
   function getAnggotaAll()
   {
     $hasil = $this->db->query("SELECT *,(SELECT nama FROM `vwsiswa` WHERE `nis` = vwang.`nis` AND nama IS NOT NULL) as nama FROM `vwanggota` vwang");

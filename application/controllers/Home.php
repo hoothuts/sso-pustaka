@@ -310,7 +310,7 @@ class Home extends CI_Controller
             $config['base_url'] = base_url() . 'home/penelusuran_buku/_advance_search/';
             $page = $param2;
         } else {
-            $this->session->sess_destroy();
+            $this->session->unset_userdata(array('cari', 'judul', 'penulis', 'seri', 'isbn', 'kategori'));
             $page_data['search'] = '';
             $config['base_url'] = base_url() . 'home/penelusuran_buku/';
             $page = $param1;
@@ -1206,12 +1206,13 @@ class Home extends CI_Controller
         if ($username != '' && $pass != '') {
             if ($username == $pass) {
                 $cek = $this->Md_siperpus_sysuser->cekAnggota($username);
-            } else {
-                echo json_encode(FALSE);
             }
         }
         if ($cek) {
+            $info = $this->Md_vwanggota->getInfoAnggota($username);
             $this->session->set_userdata('member', $username);
+            $this->session->set_userdata('member_nama', $info && $info->nama ? $info->nama : $username);
+            $this->session->set_userdata('member_tipe', $info && $info->kategori == 'k' ? 'Pegawai' : 'Anggota');
             echo json_encode(TRUE);
         } else {
             echo json_encode(FALSE);
@@ -1792,6 +1793,8 @@ class Home extends CI_Controller
     function logoutmember()
     {
         $this->session->unset_userdata('member');
+        $this->session->unset_userdata('member_nama');
+        $this->session->unset_userdata('member_tipe');
         redirect(base_url(), 'refresh');
     }
     

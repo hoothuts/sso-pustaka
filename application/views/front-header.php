@@ -28,10 +28,33 @@
               <?php endforeach;
               endif; ?>
               <li> <span style="color:#ffffff;"> | </span></li>
-              <li> <a class="text-white" href="<?= base_url(); ?>home/loginform"><i class="fa fa-sign-in text-white"></i> Sign In</a> </li>
-              <?php if ($this->session->has_userdata('member')) { ?>
-                <li> <a class="text-white" href="<?= base_url(); ?>home/logoutmember"><i class="fa fa-sign-in text-white"></i> LogOut Member</a> </li>
-              <?php } ?>
+              <?php
+              $sso_staf    = $this->session->userdata('login_type') === 'admin';
+              $sso_anggota = $this->session->has_userdata('member');
+              ?>
+
+              <?php if ($sso_staf) : ?>
+                <li class="navbar-user">
+                  <i class="fa fa-user-circle text-white"></i>
+                  <span class="navbar-user-name"><?= htmlspecialchars($this->session->userdata('username')) ?></span>
+                  <span class="navbar-user-badge">Staf<?= $this->session->userdata('login_via') === 'sso' ? ' SSO' : '' ?></span>
+                </li>
+                <li> <a class="text-white" href="<?= base_url(); ?>admin/<?= $this->session->userdata('default') ?: 'manage_artikel' ?>"><i class="fa fa-dashboard text-white"></i> Dashboard</a> </li>
+                <li> <a class="text-white" href="<?= base_url(); ?>admin/logout"><i class="fa fa-sign-out text-white"></i> Logout</a> </li>
+              <?php elseif ($sso_anggota) : ?>
+                <?php
+                $nama_anggota = $this->session->userdata('member_nama') ?: $this->session->userdata('member');
+                $tipe_anggota = $this->session->userdata('member_tipe') ?: 'Anggota';
+                ?>
+                <li class="navbar-user">
+                  <i class="fa fa-user-circle text-white"></i>
+                  <span class="navbar-user-name"><?= htmlspecialchars($nama_anggota) ?></span>
+                  <span class="navbar-user-badge"><?= htmlspecialchars($tipe_anggota) ?></span>
+                </li>
+                <li> <a class="text-white" href="<?= base_url(); ?>home/logoutmember"><i class="fa fa-sign-out text-white"></i> Logout</a> </li>
+              <?php else : ?>
+                <li> <a class="text-white" href="<?= base_url(); ?>home/loginform"><i class="fa fa-sign-in text-white"></i> Sign In</a> </li>
+              <?php endif; ?>
             </ul>
           </div>
         </div>

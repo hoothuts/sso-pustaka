@@ -142,8 +142,6 @@ class Md_siperpus_sysuser extends CI_Model {
 
     function cekAnggota($username) {
         $cek = $this->db->select('nis')->from('vwanggota')->where('nis', $username)->get()->result();
-        // var_dump($cek);
-        // // echo $cek;
-        return $cek[0]->nis;
+        return isset($cek[0]) ? $cek[0]->nis : NULL;
     }
 }
