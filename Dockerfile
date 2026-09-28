@@ -2,7 +2,7 @@ FROM php:7.4-apache
 
 RUN rm -rf /etc/apt/sources.list.d/* \
  && echo "deb http://archive.debian.org/debian bullseye main contrib non-free" > /etc/apt/sources.list \
- && echo "deb http://archive.debian.org/debian bullseye-backports main contrib non-free" >> /etc/apt/sources.list \
+ && echo "deb http://archive.debian.org/debian-security bullseye-security main contrib non-free" >> /etc/apt/sources.list \
  && echo 'Acquire::Check-Valid-Until "false";' > /etc/apt/apt.conf.d/99no-check-valid-until \
  && apt-get update \
  && apt-get install -y --allow-downgrades \
@@ -18,7 +18,7 @@ RUN rm -rf /etc/apt/sources.list.d/* \
         git \
  && docker-php-ext-configure gd --with-freetype --with-jpeg \
  && docker-php-ext-install -j"$(nproc)" gd mysqli pdo_mysql zip intl curl mbstring bcmath \
- && a2enmod rewrite headers \
+ && a2enmod rewrite \
  && { \
         echo '<Directory /var/www/html>'; \
         echo '    AllowOverride All'; \

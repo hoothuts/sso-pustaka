@@ -109,7 +109,7 @@ function readvisitor()
 
     //$ip    = $CI->input->ip_address(); // Mendapatkan IP user
     //untuk reverse proxy HTTP_X_FORWARDED_FOR
-    $ip = isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ? $_SERVER["HTTP_X_FORWARDED_FOR"] : $_SERVER['REMOTE_ADDR'];
+    $ip = isset($_SERVER["HTTP_X_FORWARDED_FOR"]) ? $_SERVER["HTTP_X_FORWARDED_FOR"] : (isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '127.0.0.1');
     $date  = date("Y-m-d"); // Mendapatkan tanggal sekarang
     $waktu = time(); //
     $timeinsert = date("Y-m-d H:i:s");

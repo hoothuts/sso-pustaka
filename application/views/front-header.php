@@ -35,11 +35,12 @@
 
               <?php if ($sso_staf) : ?>
                 <li class="navbar-user">
-                  <i class="fa fa-user-circle text-white"></i>
-                  <span class="navbar-user-name"><?= htmlspecialchars($this->session->userdata('username')) ?></span>
-                  <span class="navbar-user-badge">Staf<?= $this->session->userdata('login_via') === 'sso' ? ' SSO' : '' ?></span>
+                  <a class="text-white" href="<?= base_url(); ?>admin/<?= $this->session->userdata('default') ?: 'manage_artikel' ?>" title="Dashboard">
+                    <i class="fa fa-user-circle text-white"></i>
+                    <span class="navbar-user-name"><?= htmlspecialchars($this->session->userdata('username')) ?></span>
+                  </a>
+                  <span class="navbar-user-badge"><?= htmlspecialchars($this->session->userdata('member_tipe') ?: 'Pegawai') ?><?= $this->session->userdata('login_via') === 'sso' ? ' SSO' : '' ?></span>
                 </li>
-                <li> <a class="text-white" href="<?= base_url(); ?>admin/<?= $this->session->userdata('default') ?: 'manage_artikel' ?>"><i class="fa fa-dashboard text-white"></i> Dashboard</a> </li>
                 <li> <a class="text-white" href="<?= base_url(); ?>admin/logout"><i class="fa fa-sign-out text-white"></i> Logout</a> </li>
               <?php elseif ($sso_anggota) : ?>
                 <?php

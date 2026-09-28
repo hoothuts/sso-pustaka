@@ -147,6 +147,16 @@
     white-space: nowrap;
 }
 
+.header-top .navbar-user a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.header-top .navbar-user a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
 .header-top .navbar-user i {
     margin-right: 4px;
 }

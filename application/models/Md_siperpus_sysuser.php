@@ -106,13 +106,7 @@ class Md_siperpus_sysuser extends CI_Model {
     }
 
     function getUserById($id) {
-        $hasil = $this->db->query("SELECT * FROM siperpus_sysuser where idsysuser='$id'");
-        if ($hasil->num_rows() > 0) {
-            foreach ($hasil->result() as $row) {
-                $data[] = $row;
-            }
-            return $data;
-        }
+        return $this->db->get_where('siperpus_sysuser', array('idsysuser' => $id, 'active' => '1'))->result();
     }
 
     function getUserByNip($nip) {

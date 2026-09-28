@@ -6,9 +6,10 @@ $query_builder = TRUE;
 
 $db['default'] = array(
 	'dsn'	   => '',
-	'hostname' => 'localhost',
-	'username' => 'root',
-	'password' => '',
+	'hostname' => 'mariadb',
+	'port'     => 3306,
+	'username' => 'magang',
+	'password' => 'magang123',
 	'database' => 'sim_perpustakaan',
 	'dbdriver' => 'mysqli',
 	'dbprefix' => '',

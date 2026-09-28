@@ -1212,7 +1212,7 @@ class Home extends CI_Controller
             $info = $this->Md_vwanggota->getInfoAnggota($username);
             $this->session->set_userdata('member', $username);
             $this->session->set_userdata('member_nama', $info && $info->nama ? $info->nama : $username);
-            $this->session->set_userdata('member_tipe', $info && $info->kategori == 'k' ? 'Pegawai' : 'Anggota');
+            $this->session->set_userdata('member_tipe', $info && $info->kategori == 'k' ? 'Pegawai' : ($info && $info->kategori == 'm' ? 'Mahasiswa' : 'Anggota'));
             echo json_encode(TRUE);
         } else {
             echo json_encode(FALSE);
@@ -1792,9 +1792,15 @@ class Home extends CI_Controller
 
     function logoutmember()
     {
+        $login_via = $this->session->userdata('login_via');
         $this->session->unset_userdata('member');
         $this->session->unset_userdata('member_nama');
         $this->session->unset_userdata('member_tipe');
+        $this->session->unset_userdata('login_type');
+        $this->session->unset_userdata('login_via');
+        if ($login_via === 'sso') {
+            redirect($this->config->item('sso_base_url') . '/logout.php');
+        }
         redirect(base_url(), 'refresh');
     }
     
